@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module err_correction (clk,start,RplusC,response,leds,corrected,ready,errors
+module err_correction (clk,start,RplusC,response,leds,corrected,err_found_out,ready,errors
     );
     
     localparam DATA_BITS = 192;
