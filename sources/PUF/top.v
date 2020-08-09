@@ -47,6 +47,7 @@ module top(
     wire [255:0] response;
     wire [255:0] send_response;
     wire [263:0] corrected;
+	wire [263:0] err_found;
     wire corr_ready;
     
     wire [263:0] RplusC;
@@ -65,8 +66,10 @@ module top(
     
     assign reset = !CPU_RESETN;
     
-    assign response_DV = SW0 ? pulse : sha_digest_valid ;
-    assign send_response = SW0 ? corrected[255:0] : sha_digest;
+    //assign response_DV = SW0 ? pulse : sha_digest_valid ;
+    //assign send_response = SW0 ? corrected[255:0] : sha_digest;
+    assign pulse = SW0 ? corr_ready : PUF_done ;
+    assign send_response = SW0 ? err_found[255:0] : response;
     
     PUF MyPUF(
         .clk(CLK100MHZ),
@@ -115,13 +118,13 @@ module top(
         
     pulse_scaler MyPS(
         .clk(CLK100MHZ),
-        .in(corr_ready),
-        .out(pulse)      );
+        .in(pulse),
+        .out(response_DV)      );
         
-    pulse_scaler MyPS2(
-        .clk(CLK100MHZ),
-        .in(corr_ready),
-        .out(sha_init)      );
+    //pulse_scaler MyPS2(
+    //    .clk(CLK100MHZ),
+    //    .in(corr_ready),
+    //    .out(sha_init)      );
 
     mem MyMEM (
         .clk(CLK100MHZ),
@@ -138,6 +141,7 @@ module top(
         .response({8'b0,response}),
         .leds(LED),
         .corrected(corrected),
+		.err_found_out(err_found),
         .ready(corr_ready),
         .errors(LED17_G)
     );
