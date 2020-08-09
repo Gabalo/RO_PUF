@@ -34,6 +34,7 @@ module err_correction (clk,start,RplusC,response,leds,corrected,ready,errors
     input [N-1:0] response;
     output [15:0] leds;
     output [N-1:0] corrected;
+	output [N-1:0] err_found_out;
     output ready;
     output reg  errors;
     
@@ -85,7 +86,8 @@ module err_correction (clk,start,RplusC,response,leds,corrected,ready,errors
     );
     
     assign corrected = reg_response ^ err_found;
-    
+    assign err_found_out = err_found;
+	
     assign leds[7:0] = EplusC[7:0];
     assign leds[15:8] = reg_RplusC[7:0];  
     
