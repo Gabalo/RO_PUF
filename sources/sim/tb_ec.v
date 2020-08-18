@@ -33,12 +33,13 @@ module tb_ec(
     reg [N-1:0] response;
     reg [N-1:0] RplusC;
     wire [N-1:0] corrected;
+    wire [N-1:0] err_found;
     wire corr_ready;
     
     initial begin
         challenge = 8'h2A;
-        response = 256'h26f085408400280228055a740ba640011740016f403577a8b17fa085400ac185;
-        RplusC = 264'h1212a6fdda38ded8101c5322eeb778b013231679f5fceb86c751c0ce8b21e13cd1;
+        response = 256'hB3A617B90E77752A732F39E72F183E7F38F3B53867ED381D73182F07812B0E09;
+        RplusC = 264'h1287f06f23b2a985384779417d93c6ca6d0ca5cda2db33c97293a74109e0c0f358;
         #12 start = 1;
         #22 start = 0; 
     end
@@ -51,6 +52,7 @@ module tb_ec(
         .RplusC(RplusC),
         .response({8'b0,response}),
         .leds(),
+        .err_found_out(err_found),
         .corrected(corrected),
         .ready(corr_ready),
         .errors()

@@ -4,7 +4,6 @@ tic;
 MAX = 33;
 count = 0;
 s = serialport("COM4", 115200);
-f = fopen('crp_2A_01.txt','w');
 wd = fopen('hexa.txt','r');
 
 %% 
@@ -21,6 +20,5 @@ end
 
 %%
 
-fclose(f);
 fclose(wd);
 toc;

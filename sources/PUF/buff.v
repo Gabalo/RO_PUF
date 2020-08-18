@@ -21,7 +21,7 @@
 
 
 module buff #(
-    parameter DATA_BITS = 64,
+    parameter DATA_BITS = 264,
     parameter BITS = 8
     )(
     input clk,

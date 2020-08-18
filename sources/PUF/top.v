@@ -66,13 +66,11 @@ module top(
     
     assign reset = !CPU_RESETN;
     
-    //assign response_DV = SW0 ? pulse : sha_digest_valid ;
-    //assign send_response = SW0 ? corrected[255:0] : sha_digest;
-    assign pulse = SW0 ? corr_ready : PUF_done ;
-    assign send_response = SW0 ? err_found[255:0] : response;
+    assign response_DV = SW0 ? sha_digest_valid : PUF_done ;
+    assign send_response = SW0 ? corrected : response;
     
     PUF MyPUF(
-        .clk(CLK100MHZ),
+        .clk(CLK10MHZ),
         .start(start & !SW1),
         .challenge(challenge),
         .response(response),
@@ -93,7 +91,9 @@ module top(
         .start(start),
         .led(LED16_G),
         .mem_we(SW1),
-        .mem_data(mem_data)
+        .mem_data(mem_data),
+        .second(sha_digest),
+        .second_en(SW0)
         );
         
     uart_tx MyTX(
@@ -116,26 +116,37 @@ module top(
         .clk_out1(CLK10MHZ)
     );
         
-    pulse_scaler MyPS(
-        .clk(CLK100MHZ),
-        .in(pulse),
-        .out(response_DV)      );
+    //pulse_scaler MyPS(
+    //    .clk(CLK100MHZ),
+    //    .in(pulse),
+    //    .out(response_DV)      );
         
     //pulse_scaler MyPS2(
     //    .clk(CLK100MHZ),
     //    .in(corr_ready),
     //    .out(sha_init)      );
 
+    /*
+    (*DONT_TOUCH = "yes"*)
     mem MyMEM (
-        .clk(CLK100MHZ),
+        .clk(CLK10MHZ),
         .write_en(cntrl_done & SW1),
         .addr(challenge),
         .data_in(mem_data),
         .data_out(RplusC)
     );
+    */
+    
+    spram MyRAM(
+        .clk(CLK10MHZ),
+        .a(challenge),
+        .d(mem_data),
+        .we(cntrl_done & SW1),
+        .spo(RplusC)
+    );
     
     err_correction MyEC (
-        .clk(CLK100MHZ),
+        .clk(CLK10MHZ),
         .start(PUF_done),
         .RplusC(RplusC),
         .response({8'b0,response}),
@@ -146,17 +157,10 @@ module top(
         .errors(LED17_G)
     );
      
-    rotate_leds #(264) rotate_leds1 (
-        .clk(CLK100MHZ),
-        .start(SW1),
-        .data_in(RplusC),
-        .leds()
-    );
-    
     sha256_core core(
        .clk(CLK10MHZ),
        .reset_n(CPU_RESETN),
-       .init(sha_init),
+       .init(corr_ready),
        .next(),
        .mode(1'b1),    
        .block({256'b0,corrected[255:0]}),
@@ -167,8 +171,6 @@ module top(
        
    assign LED16_B = SW0;
    assign LED16_R = SW1;
-   //assign LED[11:6] = RplusC[5:0];
-   //assign LED[5:0] = mem_data[5:0];
    
    always @(*) begin
         if (RplusC == 0)

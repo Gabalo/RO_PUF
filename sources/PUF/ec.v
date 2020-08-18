@@ -59,7 +59,7 @@ module err_correction (clk,start,RplusC,response,leds,corrected,err_found_out,re
         end
     end
             
-     assign EplusC = reg_RplusC ^ reg_response;
+    assign EplusC = reg_RplusC ^ reg_response;
     
     buff #(N,BITS) buff_dec_in (
         .clk(clk),

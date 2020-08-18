@@ -22,7 +22,7 @@
 
 module fifo #(
     parameter SZ_IN = 8,
-    parameter SZ_OUT = 127
+    parameter SZ_OUT = 264
     )(
     input clk,
     input start,
