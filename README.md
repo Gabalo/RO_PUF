@@ -1,2 +1,4 @@
 # RO_PUF
  Ring Oscillator Physically Unclonable Funtion
+
+codeword: 123456789abcdef0123456789abcdef0123456789abcdef16fe0bf6e0e61ebfd51
