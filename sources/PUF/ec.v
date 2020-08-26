@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module err_correction (clk,start,RplusC,response,leds,corrected,err_found_out,ready,errors
+module err_correction (clk,start,RplusC,response,corrected,ready
     );
     
     localparam DATA_BITS = 192;
@@ -32,11 +32,8 @@ module err_correction (clk,start,RplusC,response,leds,corrected,err_found_out,re
     input start;
     input [N-1:0] RplusC;
     input [N-1:0] response;
-    output [15:0] leds;
     output [N-1:0] corrected;
-	output [N-1:0] err_found_out;
     output ready;
-    output reg  errors;
     
     wire [N-1:0] EplusC;
     
@@ -86,16 +83,5 @@ module err_correction (clk,start,RplusC,response,leds,corrected,err_found_out,re
     );
     
     assign corrected = reg_response ^ err_found;
-    assign err_found_out = err_found;
-	
-    assign leds[7:0] = EplusC[7:0];
-    assign leds[15:8] = reg_RplusC[7:0];  
-    
-    always @(*) begin
-        if (err_found > 0)
-            errors = 1'b1;
-        else
-            errors = 1'b0;
-    end
-    
+	 
 endmodule

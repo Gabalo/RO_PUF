@@ -34,7 +34,6 @@ module uart_controller(
     output reg tx_DV,
     output reg done,
     output reg start,
-    output reg led,
     output reg [263:0] mem_data,
 	/////////////////////////////
 	input [255:0] second,
@@ -60,7 +59,6 @@ module uart_controller(
     always@(posedge clk) begin
         if (reset) begin
             state <=SLEEP;
-            led <= 1'b0;
             tx_byte <= 8'd0;
             tx_DV <= 1'b0;
             done <= 1'b0;
@@ -75,7 +73,6 @@ module uart_controller(
                     tx_byte <= 8'd0;
                     tx_DV <= 1'b0;
                     done <= 1'b0;
-                    led <= 1'b0;
                     if (rx_DV) begin
                         state <= IDLE;
                         temp_challenge <= rx_byte;
@@ -186,7 +183,6 @@ module uart_controller(
                 end
                 //-----------------------------------
                 RECV_MEM: begin
-                    led <= 1'b1;
                     if (rx_DV) begin
                         counter_wm <= counter_wm + 1;
                         write_data <= {write_data[255:0],rx_byte};
@@ -202,7 +198,6 @@ module uart_controller(
                 default: begin
                     state <= SLEEP;
                     tx_byte <= 8'd0;
-                    led <= 1'b0;
                     tx_DV <= 1'b0;
                     done <= 1'b0;
                     counter <= 5'b0;

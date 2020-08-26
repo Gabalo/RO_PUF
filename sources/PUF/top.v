@@ -24,16 +24,11 @@ module top(
     input CLK100MHZ,
     //input START,
     input CPU_RESETN,
-    input SW0,
-    input SW1,
+    input [1:0] SW,
     input UART_RXD,
     output UART_TXD,
-    output [15:0] LED,
-    output LED16_B,
-    output LED16_R,
-    output LED16_G,
-    output reg LED17_R,
-    output LED17_G
+    output [1:0] LED,
+    output reg LED17_R
     );
     
     wire start;
@@ -45,16 +40,15 @@ module top(
     
     wire [7:0] challenge;
     wire [255:0] response;
-    wire [255:0] send_response;
+    reg [255:0] send_response;
     wire [263:0] corrected;
-	wire [263:0] err_found;
     wire corr_ready;
     
     wire [263:0] RplusC;
     wire [263:0] mem_data;
     
     wire pulse;
-    wire response_DV;
+    reg response_DV;
     wire PUF_done;
     wire cntrl_done;
     
@@ -66,12 +60,34 @@ module top(
     
     assign reset = !CPU_RESETN;
     
-    assign response_DV = SW0 ? sha_digest_valid : PUF_done ;
-    assign send_response = SW0 ? corrected : response;
-    
+    always@* begin
+        case(SW[1:0])
+            2'b00: begin
+                response_DV = PUF_done;
+                send_response = response; 
+            end
+            2'b01: begin
+                response_DV = corr_ready;
+                send_response = corrected; 
+            end
+            2'b10: begin
+                response_DV = sha_digest_valid;
+                send_response = sha_digest; 
+            end
+            2'b11: begin
+                response_DV = 0;
+                send_response = 0; 
+            end
+            default: begin
+                response_DV = 0;
+                send_response = 0; 
+            end
+        endcase
+    end
+
     PUF MyPUF(
         .clk(CLK10MHZ),
-        .start(start & !SW1),
+        .start(start & !SW[1]),
         .challenge(challenge),
         .response(response),
         .done(PUF_done)     );
@@ -89,11 +105,10 @@ module top(
         .tx_DV(tx_DV),
         .done(cntrl_done),
         .start(start),
-        .led(LED16_G),
-        .mem_we(SW1),
+        .mem_we(SW[1]),
         .mem_data(mem_data),
-        .second(sha_digest),
-        .second_en(SW0)
+        .second(),
+        .second_en(1'b0)
         );
         
     uart_tx MyTX(
@@ -115,33 +130,12 @@ module top(
         .clk_in1(CLK100MHZ),
         .clk_out1(CLK10MHZ)
     );
-        
-    //pulse_scaler MyPS(
-    //    .clk(CLK100MHZ),
-    //    .in(pulse),
-    //    .out(response_DV)      );
-        
-    //pulse_scaler MyPS2(
-    //    .clk(CLK100MHZ),
-    //    .in(corr_ready),
-    //    .out(sha_init)      );
-
-    /*
-    (*DONT_TOUCH = "yes"*)
-    mem MyMEM (
-        .clk(CLK10MHZ),
-        .write_en(cntrl_done & SW1),
-        .addr(challenge),
-        .data_in(mem_data),
-        .data_out(RplusC)
-    );
-    */
     
     spram MyRAM(
         .clk(CLK10MHZ),
         .a(challenge),
         .d(mem_data),
-        .we(cntrl_done & SW1),
+        .we(cntrl_done & SW[1]),
         .spo(RplusC)
     );
     
@@ -150,11 +144,8 @@ module top(
         .start(PUF_done),
         .RplusC(RplusC),
         .response({8'b0,response}),
-        .leds(LED),
         .corrected(corrected),
-		.err_found_out(err_found),
-        .ready(corr_ready),
-        .errors(LED17_G)
+        .ready(corr_ready)
     );
      
     sha256_core core(
@@ -169,8 +160,8 @@ module top(
        .digest_valid(sha_digest_valid)
   );
        
-   assign LED16_B = SW0;
-   assign LED16_R = SW1;
+   assign LED[0] = SW[0];
+   assign LED[1] = SW[1];
    
    always @(*) begin
         if (RplusC == 0)

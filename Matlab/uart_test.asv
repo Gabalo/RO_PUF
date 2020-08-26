@@ -4,7 +4,7 @@ tic;
 MAX = 1000;
 count = 0;
 s = serialport("COM4", 115200);
-f = fopen('test2a_puf_bin.txt','w');
+f = fopen('test2a_ec_bin.txt','w');
 h = fopen('test2a_puf_hex.txt','w');
 
 %% 
