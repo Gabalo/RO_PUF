@@ -55,6 +55,7 @@ module top(
     wire sha_ready;
     wire sha_digest_valid;
     wire sha_init;
+    reg sha_reset;
     wire [255:0] sha_digest;
     wire [255:0] sha_block;
     
@@ -87,7 +88,7 @@ module top(
 
     PUF MyPUF(
         .clk(CLK10MHZ),
-        .start(start & !SW[1]),
+        .start(start & !(SW[0]&SW[1])),
         .challenge(challenge),
         .response(response),
         .done(PUF_done)     );
@@ -105,7 +106,7 @@ module top(
         .tx_DV(tx_DV),
         .done(cntrl_done),
         .start(start),
-        .mem_we(SW[1]),
+        .mem_we(SW[0]&SW[1]),
         .mem_data(mem_data),
         .second(),
         .second_en(1'b0)
@@ -150,7 +151,7 @@ module top(
      
     sha256_core core(
        .clk(CLK10MHZ),
-       .reset_n(CPU_RESETN),
+       .reset_n(CPU_RESETN & sha_reset),
        .init(corr_ready),
        .next(),
        .mode(1'b1),    
@@ -159,6 +160,9 @@ module top(
        .digest(sha_digest),
        .digest_valid(sha_digest_valid)
   );
+  
+    always@(posedge CLK10MHZ)
+        sha_reset <= !sha_digest_valid;
        
    assign LED[0] = SW[0];
    assign LED[1] = SW[1];

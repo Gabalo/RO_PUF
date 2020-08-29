@@ -51,10 +51,6 @@ set_property ALLOW_COMBINATORIAL_LOOPS true [get_nets {MyPUF/ring1[15].ro1/o}]
 create_pblock thePUF
 resize_pblock [get_pblocks thePUF] -add {SLICE_X12Y0:SLICE_X45Y38}
 set_property EXCLUDE_PLACEMENT 1 [get_pblocks thePUF]
-set_property PARENT thePUF [get_pblocks theRest]
-set_property PARENT thePUF [get_pblocks theRace]
-set_property PARENT thePUF [get_pblocks pRING0]
-set_property PARENT thePUF [get_pblocks pRING1]
 
 create_pblock pRING0
 add_cells_to_pblock [get_pblocks pRING0] [get_cells {MyPUF/ring0[*].ro0/LUT6_NAND0}]
@@ -78,6 +74,10 @@ create_pblock theRest
 add_cells_to_pblock [get_pblocks theRest] [get_cells -quiet [list MyPUF/CU MyPUF/LFSR0 MyPUF/SR MyPUF/refcounter]]
 resize_pblock [get_pblocks theRest] -add {SLICE_X20Y20:SLICE_X37Y32}
 
+set_property PARENT thePUF [get_pblocks theRest]
+set_property PARENT thePUF [get_pblocks theRace]
+set_property PARENT thePUF [get_pblocks pRING0]
+set_property PARENT thePUF [get_pblocks pRING1]
 
 #
 #create_pblock theROM

@@ -4,6 +4,7 @@ uos_thesis_template.dotx
 /BCH_project/*
 /PUF_test/*
 /Matlab/*.txt
+/Matlab/*/*.txt
 /literature/*
 Literature review.pptx
 same.log

@@ -4,13 +4,13 @@ tic;
 MAX = 1000;
 count = 0;
 s = serialport("COM4", 115200);
-f = fopen('sha_2A_01.txt','w');
-h = fopen('sha_2A_01_hex.txt','w');
+f = fopen('sha_2A_99.txt','w');
+h = fopen('sha_2A_99_hex.txt','w');
 
 %% 
 
 while (count < MAX)
-    write(s,0x2A,"uint8");
+    write(s,0xb5,"uint8");
     NumBytes = s.NumBytesAvailable;
     if(NumBytes >= 66)
         data = read(s,33,"uint8");
