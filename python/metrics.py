@@ -12,7 +12,6 @@ def hamm(s1, s2):
 LENGTH = 256
 zeros = "0" * LENGTH
 
-RSIZE = 33
 lines = []
 count = 0
 relsum = 0

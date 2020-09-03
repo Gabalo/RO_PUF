@@ -8,7 +8,7 @@ wd = fopen('hexa.txt','r');
 
 %% 
 
-write(s,0x1a,"uint8");
+write(s,0x4d,"uint8");
 
 while (count < MAX)
     hex_data = fscanf(wd,'%c',2);

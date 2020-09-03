@@ -1,18 +1,18 @@
 %%
 clear
 tic;
-MAX = 1000;
+MAX = 500;
 count = 0;
 NumBytes = 0;
-s = serialport("COM4", 115200);
-f = fopen('test_aa_bin.txt','w');
-h = fopen('test_aa_hex.txt','w');
+s = serialport("COM8", 115200);
+f = fopen('4D_h_bin.txt','w');
+h = fopen('4D_h_hex.txt','w');
 
 %1A 05 78
 %%
 
 while (count < MAX)
-    write(s,0xaa,"uint8");
+    write(s,0x4D,"uint8");
     while (NumBytes < 33)
         NumBytes = s.NumBytesAvailable;
     end
