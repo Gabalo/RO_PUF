@@ -9,3 +9,5 @@ This code has been tested in a Xilinx Artix-7 FPGA.
 
 This is an example codeword from the BCH encoder, useful to generate helper data: 
 - 123456789abcdef0123456789abcdef0123456789abcdef16fe0bf6e0e61ebfd51
+
+The BCH module used here is from Russ Dill's project [https://github.com/russdill/bch_verilog].
